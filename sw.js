@@ -1,7 +1,7 @@
 // 圣诞北欧！离线缓存：页面先走网络、没网用缓存；地图瓦片、字体、库文件用过就存；天气/极光数据先网络后缓存
 const V='cn-v1',CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png',
  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.allSettled(CORE.map(u=>c.add(new Request(u,{mode:u.startsWith('http')?'no-cors':'same-origin'})))))).then(()=>self.skipWaiting()))});
+self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.allSettled(CORE.map(u=>fetch(u,{mode:u.startsWith('http')?'no-cors':'same-origin'}).then(r=>c.put(u,r))))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 const STATIC=/cdnjs\.cloudflare\.com|fonts\.(googleapis|gstatic)\.com|arcgisonline\.com/;
 const DATA=/open-meteo\.com|swpc\.noaa\.gov/;
